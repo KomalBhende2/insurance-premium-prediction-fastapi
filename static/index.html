@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InsurePredict AI - Smart Premium Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --bg-card: rgba(18, 26, 43, 0.75);
+      --bg-card-hover: rgba(24, 34, 56, 0.85);
+      --bg-input: rgba(13, 20, 36, 0.8);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: #3b82f6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #6366f1;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --low-color: #10b981;
+      --med-color: #f59e0b;
+      --high-color: #ef4444;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.45);
+      --glow-blue: 0 0 30px rgba(59, 130, 246, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
+
+    /* Ambient Background Glow */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      filter: blur(140px);
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    body::before {
+      background: #3b82f6;
+      top: -100px;
+      left: -100px;
+    }
+
+    body::after {
+      background: #8b5cf6;
+      bottom: -100px;
+      right: -100px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    /* Header Section */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+    }
+
+    .brand-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .brand-text h1 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #34d399;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Quick Action Toolbar */
+    .quick-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .quick-title {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quick-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-chip:hover {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+      transform: translateY(-1px);
+    }
+
+    /* Layout Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+
+    @media (min-width: 900px) {
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: rgba(59, 130, 246, 0.12);
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .badge-preview {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-preview.highlight {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #ffffff;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      background: rgba(18, 28, 50, 0.95);
+    }
+
+    select option {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Interactive Toggle Switch */
+    .toggle-group {
+      display: flex;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 6px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .toggle-btn.active.no {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+    }
+
+    .toggle-btn.active.yes {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+    }
+
+    .toggle-btn.active.neutral {
+      background: rgba(59, 130, 246, 0.25);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Calculated Metrics Box */
+    .live-calc-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-top: 15px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .calc-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .calc-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .calc-stat-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    /* Submit Section */
+    .submit-container {
+      margin-top: 10px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+      transition: all 0.25s ease;
+      font-family: inherit;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(59, 130, 246, 0.5);
+      background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: grayscale(0.4);
+    }
+
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Prediction Result Section */
+    .result-section {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card {
+      background: linear-gradient(180deg, rgba(23, 33, 56, 0.9) 0%, rgba(13, 20, 36, 0.95) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      box-shadow: var(--shadow-lg), 0 0 35px rgba(59, 130, 246, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      margin-top: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
+    }
+
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .result-headline h3 {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .result-badge-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .category-badge {
+      font-size: 26px;
+      font-weight: 800;
+      padding: 8px 22px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .category-badge.low {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.25);
+    }
+
+    .category-badge.medium {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
+    }
+
+    .category-badge.high {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
+    }
+
+    .confidence-box {
+      text-align: right;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .confidence-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .confidence-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* Risk Factor Tags */
+    .risk-tags-wrapper {
+      background: rgba(10, 15, 29, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 22px;
+    }
+
+    .risk-tags-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .risk-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .risk-tag {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .risk-tag.negative {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .risk-tag.positive {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Probability Distribution Bars */
+    .prob-section {
+      background: rgba(10, 15, 29, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 22px;
+    }
+
+    .prob-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .prob-row {
+      margin-bottom: 14px;
+    }
+
+    .prob-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .prob-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .prob-bar-bg {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      width: 0%;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .prob-bar-fill.low { background: linear-gradient(90deg, #10b981, #34d399); }
+    .prob-bar-fill.medium { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .prob-bar-fill.high { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+    /* Summary Matrix */
+    .summary-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .matrix-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+
+    .matrix-item .label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .matrix-item .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-top: 2px;
+    }
+
+    .recommendation-box {
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      line-height: 1.5;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      color: #bfdbfe;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    /* Error Toast */
+    .error-box {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      margin-top: 20px;
+      font-size: 13px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .footer a {
+      color: #94a3b8;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>InsurePredict AI</h1>
+          <p>Machine Learning Health Insurance Risk & Premium Classifier</p>
+        </div>
+      </div>
+      <div class="api-status" id="apiStatusBadge">
+        <div class="pulse-dot"></div>
+        <span id="apiStatusText">API Connected</span>
+      </div>
+    </header>
+
+    <!-- Quick Action / Preset Profiles -->
+    <div class="quick-bar">
+      <span class="quick-title">Quick Test Presets:</span>
+      <div class="quick-buttons">
+        <button type="button" class="btn-chip" onclick="loadPreset('healthy')">
+          🟢 Clean Health (Young, Non-smoker, No conditions)
+        </button>
+        <button type="button" class="btn-chip" onclick="loadPreset('moderate')">
+          🟡 Moderate (Adult, Occasional Drinker, Overweight)
+        </button>
+        <button type="button" class="btn-chip" onclick="loadPreset('high_risk')">
+          🔴 High Risk (Senior, Smoker, Diabetes/BP, Surgery)
+        </button>
+        <button type="button" class="btn-chip" onclick="resetForm()">
+          🔄 Clear Form
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Prediction Form -->
+    <form id="predictionForm" onsubmit="handlePredict(event)">
+      <div class="main-grid">
+        <div class="form-grid">
+          
+          <!-- Column 1: Personal & Professional Profile -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+              <h2 class="card-title">Personal & Occupation</h2>
+            </div>
+
+            <!-- Age Input -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="age">Age (Years)</label>
+                <span class="badge-preview highlight" id="ageGroupBadge">Adult (25-44)</span>
+              </div>
+              <input type="number" id="age" name="age" min="1" max="119" value="30" required oninput="updateDerivedMetrics()">
+              <div class="field-hint">Range: 1 - 119 years</div>
+            </div>
+
+            <!-- Occupation Dropdown -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="occupation">Occupation</label>
+              </div>
+              <select id="occupation" name="occupation" required>
+                <option value="private_job" selected>Private Sector Job</option>
+                <option value="government_job">Government Job</option>
+                <option value="business_owner">Business Owner / Entrepreneur</option>
+                <option value="freelancer">Freelancer / Consultant</option>
+                <option value="student">Student</option>
+                <option value="retired">Retired</option>
+                <option value="unemployed">Unemployed</option>
+              </select>
+            </div>
+
+            <!-- Income LPA -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="income_lpa">Annual Income (Lakhs INR)</label>
+                <span class="badge-preview" id="incomeDisplay">₹ 10.5 Lakhs / yr</span>
+              </div>
+              <input type="number" id="income_lpa" name="income_lpa" step="0.1" min="0.1" value="10.5" required oninput="updateDerivedMetrics()">
+              <div class="field-hint">Gross annual earnings in Lakhs per annum (e.g. 10.5 = ₹10,50,000)</div>
+            </div>
+
+            <!-- City Input with Auto-complete -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="city">City of Residence</label>
+                <span class="badge-preview highlight" id="cityTierBadge">Tier 1 City</span>
+              </div>
+              <input type="text" id="city" name="city" list="citiesList" value="Mumbai" required oninput="updateDerivedMetrics()" placeholder="e.g. Mumbai, Pune, Jaipur">
+              <datalist id="citiesList">
+                <option value="Mumbai">
+                <option value="Delhi">
+                <option value="Bangalore">
+                <option value="Chennai">
+                <option value="Kolkata">
+                <option value="Hyderabad">
+                <option value="Pune">
+                <option value="Jaipur">
+                <option value="Chandigarh">
+                <option value="Indore">
+                <option value="Lucknow">
+                <option value="Patna">
+                <option value="Coimbatore">
+                <option value="Bhopal">
+                <option value="Nagpur">
+                <option value="Vadodara">
+                <option value="Surat">
+                <option value="Dehradun">
+                <option value="Noida">
+              </datalist>
+              <div class="field-hint">Tier is automatically determined based on your city.</div>
+            </div>
+
+          </div>
+
+          <!-- Column 2: Health, Medical & Lifestyle Factors -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+              </div>
+              <h2 class="card-title">Health & Medical Profile</h2>
+            </div>
+
+            <!-- Height & Weight in 2 columns -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="height">Height (m)</label>
+                </div>
+                <input type="number" id="height" name="height" step="0.01" min="0.5" max="2.49" value="1.75" required oninput="updateDerivedMetrics()">
+                <div class="field-hint" id="heightHint">≈ 175 cm (5' 9")</div>
+              </div>
+
+              <div class="form-group">
+                <div class="label-row">
+                  <label for="weight">Weight (kg)</label>
+                </div>
+                <input type="number" id="weight" name="weight" step="0.5" min="20" max="300" value="70" required oninput="updateDerivedMetrics()">
+                <div class="field-hint">Kilograms</div>
+              </div>
+            </div>
+
+            <!-- Smoker Status Toggle -->
+            <div class="form-group">
+              <div class="label-row">
+                <label>Tobacco / Smoking Habit</label>
+              </div>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active no" id="smokerNoBtn" onclick="setSmoker(false)">
+                  <span>🚭 Non-Smoker</span>
+                </button>
+                <button type="button" class="toggle-btn" id="smokerYesBtn" onclick="setSmoker(true)">
+                  <span>🚬 Smoker (+2 pts)</span>
+                </button>
+              </div>
+              <input type="hidden" id="smoker" name="smoker" value="false">
+            </div>
+
+            <!-- Alcohol Consumption (New Feature) -->
+            <div class="form-group">
+              <div class="label-row">
+                <label>Alcohol Consumption</label>
+                <span class="badge-preview" id="alcoholBadge">None</span>
+              </div>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active no" id="alcNoneBtn" onclick="setAlcohol('none')">
+                  <span>🚫 None</span>
+                </button>
+                <button type="button" class="toggle-btn" id="alcOccBtn" onclick="setAlcohol('occasional')">
+                  <span>🍷 Occasional</span>
+                </button>
+                <button type="button" class="toggle-btn" id="alcFreqBtn" onclick="setAlcohol('frequent')">
+                  <span>🍺 Regular / Heavy</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chronic Pre-Existing Conditions (New Feature) -->
+            <div class="form-group">
+              <div class="label-row">
+                <label>Pre-Existing Condition (Diabetes/BP/Asthma)</label>
+              </div>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active no" id="preCondNoBtn" onclick="setPreExisting(false)">
+                  <span>✅ No Conditions</span>
+                </button>
+                <button type="button" class="toggle-btn" id="preCondYesBtn" onclick="setPreExisting(true)">
+                  <span>⚠️ Present (+2 pts)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Surgical / Hospitalization History (New Feature) -->
+            <div class="form-group">
+              <div class="label-row">
+                <label>Major Surgery / Hospitalization (Past 3 Yrs)</label>
+              </div>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active no" id="surgeryNoBtn" onclick="setSurgery(false)">
+                  <span>✅ None</span>
+                </button>
+                <button type="button" class="toggle-btn" id="surgeryYesBtn" onclick="setSurgery(true)">
+                  <span>🏥 Yes (+1 pt)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Family Medical History (New Feature) -->
+            <div class="form-group">
+              <div class="label-row">
+                <label>Family History (Heart Disease / Cancer &lt; 50)</label>
+              </div>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active no" id="famHistNoBtn" onclick="setFamilyHistory(false)">
+                  <span>✅ No Family History</span>
+                </button>
+                <button type="button" class="toggle-btn" id="famHistYesBtn" onclick="setFamilyHistory(true)">
+                  <span>🧬 Family History (+1 pt)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Computed Indicators Box -->
+            <div class="live-calc-box">
+              <div class="calc-stat">
+                <span class="calc-stat-label">Calculated BMI</span>
+                <span class="calc-stat-value" id="bmiValue">
+                  22.86 <span class="badge-preview" id="bmiBadge" style="background:#10b981; color:#fff;">Normal</span>
+                </span>
+              </div>
+              <div class="calc-stat">
+                <span class="calc-stat-label">Evaluated Risk Score</span>
+                <span class="calc-stat-value" id="lifestyleRiskValue">
+                  <span class="badge-preview" id="riskBadge" style="background:rgba(16,185,129,0.2); color:#34d399;">0.0 pts (Low)</span>
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-container">
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span class="spinner" id="btnSpinner"></span>
+            <span id="btnText">⚡ Predict Insurance Premium Category</span>
+          </button>
+        </div>
+
+        <!-- Error Notification Banner -->
+        <div class="error-box" id="errorBox">
+          <svg style="width:20px; height:20px; flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span id="errorMessage">An unexpected error occurred while predicting.</span>
+        </div>
+
+        <!-- Results Card Section -->
+        <section class="result-section" id="resultSection">
+          <div class="result-card">
+            <div class="result-top">
+              <div class="result-headline">
+                <h3>Underwriting Decision</h3>
+                <div class="result-badge-container">
+                  <div class="category-badge low" id="resultCategoryBadge">
+                    <span id="resultCategoryText">Low Premium</span>
+                  </div>
+                </div>
+              </div>
+              <div class="confidence-box">
+                <div class="confidence-val" id="confidenceValue">89.4%</div>
+                <div class="confidence-label">Model Confidence</div>
+              </div>
+            </div>
+
+            <!-- Identified Risk Factors (New) -->
+            <div class="risk-tags-wrapper">
+              <div class="risk-tags-title">Identified Risk & Underwriting Factors:</div>
+              <div class="risk-tag-list" id="riskFactorsList">
+                <!-- Dynamically populated tags -->
+              </div>
+            </div>
+
+            <!-- Probabilities Distribution Breakdown -->
+            <div class="prob-section">
+              <div class="prob-title">
+                <span>Class Probability Distribution</span>
+                <span style="font-size:11px; color:#94a3b8;">Random Forest / Gradient Boost Classifier</span>
+              </div>
+
+              <!-- Low Tier Bar -->
+              <div class="prob-row">
+                <div class="prob-header">
+                  <span>Low Premium Tier</span>
+                  <span id="probLowText">0%</span>
+                </div>
+                <div class="prob-bar-bg">
+                  <div class="prob-bar-fill low" id="probLowBar"></div>
+                </div>
+              </div>
+
+              <!-- Medium Tier Bar -->
+              <div class="prob-row">
+                <div class="prob-header">
+                  <span>Medium Premium Tier</span>
+                  <span id="probMedText">0%</span>
+                </div>
+                <div class="prob-bar-bg">
+                  <div class="prob-bar-fill medium" id="probMedBar"></div>
+                </div>
+              </div>
+
+              <!-- High Tier Bar -->
+              <div class="prob-row">
+                <div class="prob-header">
+                  <span>High Premium Tier</span>
+                  <span id="probHighText">0%</span>
+                </div>
+                <div class="prob-bar-bg">
+                  <div class="prob-bar-fill high" id="probHighBar"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feature Summary Matrix -->
+            <div class="summary-matrix">
+              <div class="matrix-item">
+                <div class="label">Computed BMI</div>
+                <div class="val" id="sumBmi">22.86</div>
+              </div>
+              <div class="matrix-item">
+                <div class="label">Age Group</div>
+                <div class="val" id="sumAgeGroup">adult</div>
+              </div>
+              <div class="matrix-item">
+                <div class="label">Total Risk Score</div>
+                <div class="val" id="sumRiskScore">0.0 pts</div>
+              </div>
+              <div class="matrix-item">
+                <div class="label">City Tier</div>
+                <div class="val" id="sumCityTier">Tier 1</div>
+              </div>
+              <div class="matrix-item">
+                <div class="label">Income (LPA)</div>
+                <div class="val" id="sumIncome">₹10.5 L</div>
+              </div>
+            </div>
+
+            <!-- Personalized Guidance Insight -->
+            <div class="recommendation-box" id="recommendationBox">
+              <svg style="width:20px; height:20px; flex-shrink:0; margin-top:2px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <div id="recommendationText">
+                Based on your health metrics and lifestyle, you are classified under the lowest insurance premium tier with maximum discounts.
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </form>
+
+    <footer class="footer">
+      <p>Insurance Premium Prediction API • FastAPI & Scikit-Learn • <a href="/docs" target="_blank">OpenAPI Specs (/docs)</a></p>
+    </footer>
+  </div>
+
+  <script>
+    // City Tier Configuration matching config/city_tier.py
+    const TIER_1_CITIES = ["mumbai", "delhi", "bangalore", "chennai", "kolkata", "hyderabad", "pune"];
+    const TIER_2_CITIES = [
+      "jaipur", "chandigarh", "indore", "lucknow", "patna", "ranchi", "visakhapatnam", "coimbatore",
+      "bhopal", "nagpur", "vadodara", "surat", "rajkot", "jodhpur", "raipur", "amritsar", "varanasi",
+      "agra", "dehradun", "mysore", "jabalpur", "guwahati", "thiruvananthapuram", "ludhiana", "nashik",
+      "allahabad", "udaipur", "aurangabad", "hubli", "belgaum", "salem", "vijayawada", "tiruchirappalli",
+      "bhavnagar", "gwalior", "dhanbad", "bareilly", "aligarh", "gaya", "kozhikode", "warangal",
+      "kolhapur", "bilaspur", "jalandhar", "noida", "guntur", "asansol", "siliguri"
+    ];
+
+    let isSmoker = false;
+    let selectedAlcohol = 'none';
+    let hasPreExisting = false;
+    let hasSurgery = false;
+    let hasFamilyHistory = false;
+
+    function setSmoker(value) {
+      isSmoker = value;
+      document.getElementById('smoker').value = value ? "true" : "false";
+      document.getElementById('smokerNoBtn').className = value ? "toggle-btn" : "toggle-btn active no";
+      document.getElementById('smokerYesBtn').className = value ? "toggle-btn active yes" : "toggle-btn";
+      updateDerivedMetrics();
+    }
+
+    function setAlcohol(val) {
+      selectedAlcohol = val;
+      document.getElementById('alcNoneBtn').className = (val === 'none') ? "toggle-btn active no" : "toggle-btn";
+      document.getElementById('alcOccBtn').className = (val === 'occasional') ? "toggle-btn active neutral" : "toggle-btn";
+      document.getElementById('alcFreqBtn').className = (val === 'frequent') ? "toggle-btn active yes" : "toggle-btn";
+      
+      const badge = document.getElementById('alcoholBadge');
+      if (val === 'none') badge.innerText = "None (0 pts)";
+      else if (val === 'occasional') badge.innerText = "Occasional (+0.5 pts)";
+      else badge.innerText = "Regular (+1.5 pts)";
+      
+      updateDerivedMetrics();
+    }
+
+    function setPreExisting(value) {
+      hasPreExisting = value;
+      document.getElementById('preCondNoBtn').className = value ? "toggle-btn" : "toggle-btn active no";
+      document.getElementById('preCondYesBtn').className = value ? "toggle-btn active yes" : "toggle-btn";
+      updateDerivedMetrics();
+    }
+
+    function setSurgery(value) {
+      hasSurgery = value;
+      document.getElementById('surgeryNoBtn').className = value ? "toggle-btn" : "toggle-btn active no";
+      document.getElementById('surgeryYesBtn').className = value ? "toggle-btn active yes" : "toggle-btn";
+      updateDerivedMetrics();
+    }
+
+    function setFamilyHistory(value) {
+      hasFamilyHistory = value;
+      document.getElementById('famHistNoBtn').className = value ? "toggle-btn" : "toggle-btn active no";
+      document.getElementById('famHistYesBtn').className = value ? "toggle-btn active yes" : "toggle-btn";
+      updateDerivedMetrics();
+    }
+
+    function calculateCityTier(cityName) {
+      const clean = cityName.trim().toLowerCase();
+      if (TIER_1_CITIES.includes(clean)) return 1;
+      if (TIER_2_CITIES.includes(clean)) return 2;
+      return 3;
+    }
+
+    function updateDerivedMetrics() {
+      // 1. Age Group
+      const age = parseInt(document.getElementById('age').value) || 0;
+      let ageGroupText = "Young (< 25)";
+      if (age >= 60) ageGroupText = "Senior (60+)";
+      else if (age >= 45) ageGroupText = "Middle-Aged (45-59)";
+      else if (age >= 25) ageGroupText = "Adult (25-44)";
+      document.getElementById('ageGroupBadge').innerText = ageGroupText;
+
+      // 2. Height conversions & hints
+      const height = parseFloat(document.getElementById('height').value) || 1.75;
+      const heightCm = Math.round(height * 100);
+      const totalInches = height * 39.3701;
+      const feet = Math.floor(totalInches / 12);
+      const inches = Math.round(totalInches % 12);
+      document.getElementById('heightHint').innerText = `≈ ${heightCm} cm (${feet}' ${inches}")`;
+
+      // 3. BMI
+      const weight = parseFloat(document.getElementById('weight').value) || 70;
+      let bmi = 0;
+      if (height > 0) {
+        bmi = +(weight / (height * height)).toFixed(2);
+      }
+
+      const bmiValEl = document.getElementById('bmiValue');
+      let bmiCategory = "Normal";
+      let bmiColor = "#10b981";
+
+      if (bmi < 18.5) {
+        bmiCategory = "Underweight";
+        bmiColor = "#38bdf8";
+      } else if (bmi <= 24.9) {
+        bmiCategory = "Normal";
+        bmiColor = "#10b981";
+      } else if (bmi <= 29.9) {
+        bmiCategory = "Overweight";
+        bmiColor = "#f59e0b";
+      } else {
+        bmiCategory = "Obese";
+        bmiColor = "#ef4444";
+      }
+
+      bmiValEl.innerHTML = `${bmi} <span class="badge-preview" style="background:${bmiColor}; color:#fff;">${bmiCategory}</span>`;
+
+      // 4. Cumulative Health & Lifestyle Risk Score calculation
+      let score = 0.0;
+      if (isSmoker) score += 2.0;
+      if (bmi > 30) score += 2.0;
+      else if (bmi > 27) score += 1.5;
+      
+      if (selectedAlcohol === 'frequent') score += 1.5;
+      else if (selectedAlcohol === 'occasional') score += 0.5;
+
+      if (hasPreExisting) score += 2.0;
+      if (hasSurgery) score += 1.0;
+      if (hasFamilyHistory) score += 1.0;
+
+      score = Math.round(score * 10) / 10;
+
+      let riskLabel = `${score.toFixed(1)} pts (Low Risk)`;
+      let riskBg = "rgba(16,185,129,0.2)";
+      let riskColor = "#34d399";
+
+      if (score >= 3.0) {
+        riskLabel = `${score.toFixed(1)} pts (High Risk ⚠️)`;
+        riskBg = "rgba(239,68,68,0.2)";
+        riskColor = "#f87171";
+      } else if (score >= 1.5) {
+        riskLabel = `${score.toFixed(1)} pts (Medium Risk ⚡)`;
+        riskBg = "rgba(245,158,11,0.2)";
+        riskColor = "#fbbf24";
+      }
+
+      document.getElementById('lifestyleRiskValue').innerHTML =
+        `<span class="badge-preview" style="background:${riskBg}; color:${riskColor};">${riskLabel}</span>`;
+
+      // 5. City Tier
+      const city = document.getElementById('city').value;
+      const tier = calculateCityTier(city);
+      document.getElementById('cityTierBadge').innerText = `Tier ${tier} City`;
+
+      // 6. Income display
+      const income = parseFloat(document.getElementById('income_lpa').value) || 0;
+      document.getElementById('incomeDisplay').innerText = `₹ ${income.toFixed(1)} Lakhs / yr`;
+    }
+
+    // Preset Profiles
+    function loadPreset(type) {
+      if (type === 'healthy') {
+        document.getElementById('age').value = 24;
+        document.getElementById('occupation').value = 'private_job';
+        document.getElementById('income_lpa').value = 14.5;
+        document.getElementById('city').value = 'Bangalore';
+        document.getElementById('height').value = 1.78;
+        document.getElementById('weight').value = 68;
+        setSmoker(false);
+        setAlcohol('none');
+        setPreExisting(false);
+        setSurgery(false);
+        setFamilyHistory(false);
+      } else if (type === 'moderate') {
+        document.getElementById('age').value = 38;
+        document.getElementById('occupation').value = 'business_owner';
+        document.getElementById('income_lpa').value = 18.0;
+        document.getElementById('city').value = 'Pune';
+        document.getElementById('height').value = 1.72;
+        document.getElementById('weight').value = 82;
+        setSmoker(false);
+        setAlcohol('occasional');
+        setPreExisting(false);
+        setSurgery(false);
+        setFamilyHistory(true);
+      } else if (type === 'high_risk') {
+        document.getElementById('age').value = 56;
+        document.getElementById('occupation').value = 'retired';
+        document.getElementById('income_lpa').value = 6.0;
+        document.getElementById('city').value = 'Patna';
+        document.getElementById('height').value = 1.68;
+        document.getElementById('weight').value = 92;
+        setSmoker(true);
+        setAlcohol('frequent');
+        setPreExisting(true);
+        setSurgery(true);
+        setFamilyHistory(true);
+      }
+      updateDerivedMetrics();
+    }
+
+    function resetForm() {
+      document.getElementById('predictionForm').reset();
+      setSmoker(false);
+      setAlcohol('none');
+      setPreExisting(false);
+      setSurgery(false);
+      setFamilyHistory(false);
+      document.getElementById('resultSection').style.display = 'none';
+      document.getElementById('errorBox').style.display = 'none';
+      updateDerivedMetrics();
+    }
+
+    // Health check on load
+    async function checkHealth() {
+      try {
+        const res = await fetch('/health');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('apiStatusText').innerText = `API v${data.version || '1.0'} Online`;
+        }
+      } catch (err) {
+        document.getElementById('apiStatusBadge').style.borderColor = 'rgba(239,68,68,0.4)';
+        document.getElementById('apiStatusBadge').style.background = 'rgba(239,68,68,0.1)';
+        document.getElementById('apiStatusText').innerText = 'API Offline';
+        document.getElementById('apiStatusText').style.color = '#f87171';
+      }
+    }
+
+    // Submit handler
+    async function handlePredict(e) {
+      e.preventDefault();
+
+      const errorBox = document.getElementById('errorBox');
+      const submitBtn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('btnSpinner');
+      const btnText = document.getElementById('btnText');
+      const resultSection = document.getElementById('resultSection');
+
+      errorBox.style.display = 'none';
+      submitBtn.disabled = true;
+      spinner.style.display = 'inline-block';
+      btnText.innerText = 'Evaluating Medical Profile...';
+
+      const payload = {
+        age: parseInt(document.getElementById('age').value),
+        weight: parseFloat(document.getElementById('weight').value),
+        height: parseFloat(document.getElementById('height').value),
+        income_lpa: parseFloat(document.getElementById('income_lpa').value),
+        smoker: isSmoker,
+        city: document.getElementById('city').value.trim(),
+        occupation: document.getElementById('occupation').value,
+        alcohol_habit: selectedAlcohol,
+        pre_existing_conditions: hasPreExisting,
+        surgical_history: hasSurgery,
+        family_medical_history: hasFamilyHistory
+      };
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || data.response || (typeof data === 'string' ? data : 'Prediction request failed.'));
+        }
+
+        const result = data.response ? data.response : data;
+        displayResults(result, payload);
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('errorMessage').innerText = err.message || 'Unable to connect to prediction service.';
+        errorBox.style.display = 'flex';
+      } finally {
+        submitBtn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.innerText = '⚡ Predict Insurance Premium Category';
+      }
+    }
+
+    function displayResults(result, payload) {
+      const resultSection = document.getElementById('resultSection');
+      const badge = document.getElementById('resultCategoryBadge');
+      const categoryText = document.getElementById('resultCategoryText');
+      const confVal = document.getElementById('confidenceValue');
+      const recoBox = document.getElementById('recommendationText');
+      const riskTagsList = document.getElementById('riskFactorsList');
+
+      const category = (result.predicted_category || '').toString().toLowerCase();
+
+      // Reset badge class
+      badge.className = 'category-badge';
+
+      let readableCat = 'Medium';
+      if (category.includes('low') || category === '0') {
+        badge.classList.add('low');
+        readableCat = 'Low Premium Tier';
+        recoBox.innerText = 'Excellent profile! Minimal medical and lifestyle risk qualifies you for preferred tier underwriting with lowest cost rates.';
+      } else if (category.includes('high') || category === '2') {
+        badge.classList.add('high');
+        readableCat = 'High Premium Tier';
+        recoBox.innerText = 'Higher premium tier due to identified risk factors (e.g. tobacco use, chronic conditions, or BMI). Comprehensive wellness care and medical checkups are advised.';
+      } else {
+        badge.classList.add('medium');
+        readableCat = 'Medium Premium Tier';
+        recoBox.innerText = 'Standard market rate premium. Moderate health factors qualify for regular coverage packages without excessive surcharge.';
+      }
+
+      categoryText.innerText = readableCat;
+
+      // Confidence
+      const confidence = result.confidence ? Math.round(result.confidence * 100) : 85;
+      confVal.innerText = `${confidence}%`;
+
+      // Risk Factors List
+      const factors = result.risk_factors || [];
+      riskTagsList.innerHTML = '';
+      if (factors.length === 0) {
+        riskTagsList.innerHTML = '<span class="risk-tag positive">🌿 Clean Medical Profile (Zero Elevated Risk Factors)</span>';
+      } else {
+        factors.forEach(f => {
+          riskTagsList.innerHTML += `<span class="risk-tag negative">⚠️ ${f}</span>`;
+        });
+      }
+
+      // Probabilities
+      const probs = result.class_probabilities || {};
+      const getProb = (name) => {
+        for (const k in probs) {
+          if (k.toLowerCase().includes(name)) return Math.round(probs[k] * 100);
+        }
+        return 0;
+      };
+
+      const lowP = getProb('low');
+      const medP = getProb('med');
+      const highP = getProb('high');
+
+      document.getElementById('probLowText').innerText = `${lowP}%`;
+      document.getElementById('probMedText').innerText = `${medP}%`;
+      document.getElementById('probHighText').innerText = `${highP}%`;
+
+      document.getElementById('probLowBar').style.width = `${lowP}%`;
+      document.getElementById('probMedBar').style.width = `${medP}%`;
+      document.getElementById('probHighBar').style.width = `${highP}%`;
+
+      // Summary matrix
+      const height = payload.height || 1.75;
+      const weight = payload.weight || 70;
+      const bmi = +(weight / (height * height)).toFixed(2);
+      document.getElementById('sumBmi').innerText = bmi;
+
+      let ageGroup = 'adult';
+      if (payload.age < 25) ageGroup = 'young';
+      else if (payload.age >= 60) ageGroup = 'senior';
+      else if (payload.age >= 45) ageGroup = 'middle_aged';
+      document.getElementById('sumAgeGroup').innerText = ageGroup;
+
+      const riskScore = result.risk_score !== undefined ? result.risk_score : 0.0;
+      document.getElementById('sumRiskScore').innerText = `${riskScore} pts`;
+
+      document.getElementById('sumCityTier').innerText = `Tier ${calculateCityTier(payload.city)}`;
+      document.getElementById('sumIncome').innerText = `₹${payload.income_lpa} L`;
+
+      // Show and scroll to result
+      resultSection.style.display = 'block';
+      resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Initialize metrics on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateDerivedMetrics();
+      checkHealth();
+    });
+  </script>
+</body>
+</html>
